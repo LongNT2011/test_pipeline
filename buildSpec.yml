@@ -11,13 +11,21 @@ phases:
   build:
     commands:
       - echo "Building for environment: $DEPLOY_ENV"
-      - if [ "$DEPLOY_ENV" == "dev" ]; then sed -i 's/ENVIRONMENT/Dev/' index.html; fi
-      - if [ "$DEPLOY_ENV" == "prod" ]; then sed -i 's/ENVIRONMENT/Prod/' index.html; fi
+      - |
+        if [ "$DEPLOY_ENV" == "dev" ]; then 
+          sed -i 's/ENVIRONMENT/Dev/' index.html; 
+        elif [ "$DEPLOY_ENV" == "prod" ]; then 
+          sed -i 's/ENVIRONMENT/Prod/' index.html; 
+        fi
   post_build:
     commands:
       - echo "Deploying to S3..."
-      - if [ "$DEPLOY_ENV" == "dev" ]; then aws s3 sync . s3://longnt-dev-web --exclude "buildSpec.yml" --delete; fi
-      - if [ "$DEPLOY_ENV" == "prod" ]; then aws s3 sync . s3://longnt-prod-web --exclude "buildSpec.yml" --delete; fi
+      - |
+        if [ "$DEPLOY_ENV" == "dev" ]; then 
+          aws s3 sync . s3://longnt-dev-web --exclude "buildSpec.yml" --delete; 
+        elif [ "$DEPLOY_ENV" == "prod" ]; then 
+          aws s3 sync . s3://longnt-prod-web --exclude "buildSpec.yml" --delete; 
+        fi
 artifacts:
   files:
     - '**/*'
