@@ -7,7 +7,7 @@ phases:
   pre_build:
     commands:
       - echo "Preparing for deployment..."
-      - export DEPLOY_ENV=dev
+      - export DEPLOY_ENV="dev"
   build:
     commands:
       - echo "Building for environment: $DEPLOY_ENV"
