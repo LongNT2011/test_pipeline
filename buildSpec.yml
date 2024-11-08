@@ -3,14 +3,21 @@ version: 0.2
 phases:
   install:
     commands:
-      - echo "Installing dependencies..."
+      - echo "Installing dependencies if needed..."
+  pre_build:
+    commands:
+      - echo "Preparing for deployment..."
+      - export DEPLOY_ENV=dev
   build:
     commands:
-      - echo "Building the static website..."
+      - echo "Building for environment: $DEPLOY_ENV"
+      - if [ "$DEPLOY_ENV" == "dev" ]; then sed -i 's/ENVIRONMENT/Dev/' index.html; fi
+      - if [ "$DEPLOY_ENV" == "prod" ]; then sed -i 's/ENVIRONMENT/Prod/' index.html; fi
   post_build:
     commands:
       - echo "Deploying to S3..."
-      - aws s3 sync . s3://longnt-dev-web --exclude "buildSpec.yml" --delete
+      - if [ "$DEPLOY_ENV" == "dev" ]; then aws s3 sync . s3://longnt-dev-web --exclude "buildSpec.yml" --delete; fi
+      - if [ "$DEPLOY_ENV" == "prod" ]; then aws s3 sync . s3://longnt-prod-web --exclude "buildSpec.yml" --delete; fi
 artifacts:
   files:
     - '**/*'
