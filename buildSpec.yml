@@ -1,0 +1,17 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo "Installing dependencies..."
+  build:
+    commands:
+      - echo "Building the static website..."
+  post_build:
+    commands:
+      - echo "Deploying to S3..."
+      - aws s3 sync . s3://longnt-dev-web --exclude "buildSpec.yml" --delete
+artifacts:
+  files:
+    - '**/*'
+  discard-paths: yes
