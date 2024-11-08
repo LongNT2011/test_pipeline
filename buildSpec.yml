@@ -10,7 +10,7 @@ phases:
       - export DEPLOY_ENV="dev"
   build:
     commands:
-      - echo "Building for environment: $DEPLOY_ENV"
+      - echo "Building for environment:$DEPLOY_ENV"
       - |
         if [ "$DEPLOY_ENV" == "dev" ]; then 
           sed -i 's/ENVIRONMENT/Dev/' index.html; 
