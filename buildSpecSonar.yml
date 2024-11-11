@@ -11,7 +11,7 @@ phases:
     runtime-versions:
       nodejs: lts
     commands:
-      - echo "Updating system and installing necessary packag"
+      - echo "Updating system and installing necessary package."
       - npm install -g jq
       - wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.3.0.1492-linux.zip
       - unzip ./sonar-scanner-cli-3.3.0.1492-linux.zip
@@ -24,6 +24,11 @@ phases:
   build:
     commands:
       - echo "Running SonarQube analysis..."
+      - echo "Sonar token:$SonarToken"
+      - echo "Sonar host:$Host"
+      - echo "Project key:$Project"
+      - echo "Organization:$Organization"
+      - echo "Project Key:$ProjectKey"
       - sonar-scanner -Dsonar.organization=$Organization -Dsonar.projectKey=$ProjectKey -Dsonar.sources=. -Dsonar.host.url=$Host
       - sleep 5
       - echo "Checking SonarQube Quality Gate status..."
