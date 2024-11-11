@@ -1,0 +1,34 @@
+version: 0.2
+env:
+  secrets-manager:
+    LOGIN: prod/test_pipeline:SonarToken
+    HOST: prod/test_pipeline:HOST
+    Organization: prod/test_pipeline:Organization
+    Project: prod/test_pipeline:Project
+phases:
+  install:
+    runtime-versions:
+      nodejs: lts
+    commands:
+      - echo "Updating system and installing necessary packages..."
+      - apt-get update
+      - apt-get install -y jq
+      - wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.3.0.1492-linux.zip
+      - unzip ./sonar-scanner-cli-3.3.0.1492-linux.zip
+      - export PATH=$PATH:./sonar-scanner-3.3.0.1492-linux/bin/
+  pre_build:
+    commands:
+      - echo "Installing project dependencies for SonarQube scan..."
+      - npm install
+  build:
+    commands:
+      - echo "Running SonarQube analysis..."
+      - sonar-scanner -Dsonar.login=$LOGIN -Dsonar.host.url=$HOST -Dsonar.projectKey=$Project -Dsonar.organization=$Organization
+      - sleep 5
+      - echo "Checking SonarQube Quality Gate status..."
+      - curl https://sonarcloud.io/api/qualitygates/project_status?projectKey=$Project > result.json
+      - cat result.json
+      - if [ "$(jq -r '.projectStatus.status' result.json)" = "ERROR" ]; then exit 1; fi
+cache:
+  paths:
+    - "node_modules/**/*"
