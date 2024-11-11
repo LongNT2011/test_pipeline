@@ -11,7 +11,8 @@ phases:
       nodejs: lts
     commands:
       - echo "Updating system and installing necessary package."
-      - npm install -g jq
+      - apt-get update
+      - apt-get install -y jq
       - export SONAR_SCANNER_VERSION=5.0.1.3006
       - export SONAR_SCANNER_HOME=$HOME/.sonar/sonar-scanner-$SONAR_SCANNER_VERSION-linux
       - curl --create-dirs -sSLo $HOME/.sonar/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION-linux.zip
@@ -33,7 +34,7 @@ phases:
       - sonar-scanner -Dsonar.projectKey=$ProjectKey -Dsonar.sources=. -Dsonar.host.url=$Host
       - sleep 5
       - echo "Checking SonarQube Quality Gate status..."
-      - curl https://sonarcloud.io/api/qualitygates/project_status?projectKey=$Project > result.json
+      - curl http://54.196.22.99/api/qualitygates/project_status?projectKey=$Project > result.json
       - cat result.json
       - if [ "$(jq -r '.projectStatus.status' result.json)" = "ERROR" ]; then exit 1; fi
 cache:
