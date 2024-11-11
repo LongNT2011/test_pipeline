@@ -1,10 +1,11 @@
 version: 0.2
 env:
   secrets-manager:
-    LOGIN: prod/test_pipeline:SonarToken
-    HOST: prod/test_pipeline:HOST
+    SonarToken: prod/test_pipeline:SonarToken
+    Host: prod/test_pipeline:Host
     Organization: prod/test_pipeline:Organization
     Project: prod/test_pipeline:Project
+    ProjectKey: prod/test_pipeline:ProjectKey
 phases:
   install:
     runtime-versions:
@@ -15,6 +16,7 @@ phases:
       - wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.3.0.1492-linux.zip
       - unzip ./sonar-scanner-cli-3.3.0.1492-linux.zip
       - export PATH=$PATH:./sonar-scanner-3.3.0.1492-linux/bin/
+      - export SONAR_TOKEN=$SONAR_TOKEN:$SonarToken
   pre_build:
     commands:
       - echo "Installing project dependencies for SonarQube scan..."
@@ -22,7 +24,7 @@ phases:
   build:
     commands:
       - echo "Running SonarQube analysis..."
-      - sonar-scanner -Dsonar.login=$LOGIN -Dsonar.host.url=$HOST -Dsonar.projectKey=$Project -Dsonar.organization=$Organization
+      - sonar-scanner -Dsonar.organization=$Organization -Dsonar.projectKey=$ProjectKey -Dsonar.sources=. -Dsonar.host.url=$Host
       - sleep 5
       - echo "Checking SonarQube Quality Gate status..."
       - curl https://sonarcloud.io/api/qualitygates/project_status?projectKey=$Project > result.json
